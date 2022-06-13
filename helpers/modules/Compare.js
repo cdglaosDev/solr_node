@@ -1,3 +1,5 @@
+import clc from "cli-color";
+
 async function compareValue(rawData, compareData) {
   const index = await compareData
     .map((e) => {
@@ -37,17 +39,33 @@ async function compareProvinceAndDistrict(province, district, compareData) {
 }
 
 async function compareBrandAndModel(brand, model, compareData, brandArr) {
-  const brandIndex = await brandArr.findIndex((value) =>
-    value.name ? value.name.toUpperCase() === brand : ""
-  );
-  console.log(brand);
+  let brandIndex = 0;
+  if (brand === null) {
+    brandIndex = await brandArr.findIndex((value) =>
+      value.name ? value.name.toUpperCase() === brand : ""
+    );
+  } else {
+    brandIndex = await brandArr.findIndex((value) =>
+      value.name
+        ? value.name.toUpperCase() === brand.toUpperCase()
+        : "" === brand.toUpperCase()
+    );
+  }
   if (brandIndex !== -1 && brandArr[brandIndex].id) {
     const brandId = brandArr[brandIndex].id;
     // const bothIndex = await compareData.findIndex(value => value.brand_id === brandId && !value.model ? value.model.toString().toUpperCase() : '' === model.toUpperCase())
-    const bothIndex = await compareData.findIndex((value) => {
-      const str = value.model ? value.model.toString() : "";
-      return str.toUpperCase() === model;
-    });
+    let bothIndex = 0;
+    if (model === null) {
+      bothIndex = await compareData.findIndex((value) => {
+        const str = value.model ? value.model.toString() : "";
+        return str.toUpperCase() === model;
+      });
+    } else {
+      bothIndex = await compareData.findIndex((value) => {
+        const str = value.model ? value.model.toString() : "";
+        return str.toUpperCase() === model.toUpperCase();
+      });
+    }
     if (bothIndex !== -1) {
       return {
         brand: brandId,

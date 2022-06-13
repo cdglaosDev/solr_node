@@ -4,16 +4,17 @@ import vehicleController from "./controllers/Vehicles.js";
 import logController from "./controllers/Logs.js";
 import historyController from "./controllers/Histories.js";
 import fileController from "./controllers/File.js";
-// import saveJson from "./controllers/VihicelPreupload.js";
+import saveJson from "./controllers/VihicelPreupload.js";
+import clc from "cli-color";
 
-await startProgram();
+// await startProgram();
 
-// call();
-// // call data
-// async function call() {
-//   await saveJson.savetoVehiclepreupload();
-//   await startProgram();
-// }
+call();
+// call data
+async function call() {
+  await saveJson.savetoVehiclepreupload();
+  await startProgram();
+}
 async function startProgram() {
   let vehicleId;
   let createError = "";
@@ -24,7 +25,7 @@ async function startProgram() {
   const cleansingData = await readExcel();
   const arr = await PreUpload.findAll()
     .then((result) => {
-      console.log("Data have:", result.length, "records.");
+      console.log(clc.red("Data have:", result.length, "records."));
       return result;
     })
     .catch((err) => {
@@ -62,7 +63,7 @@ async function startProgram() {
       console.log(err);
       historyError = historyError + `${vehicleId}, ${err}\n`;
     });
-    console.log("----------------------------------");
+    console.log(clc.blue("----------------------------------"));
   }
   await creteErrorFile(createError, updateError, logError, historyError);
   setTimeout(() => {

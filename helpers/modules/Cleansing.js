@@ -1,28 +1,63 @@
-import compare from './Compare.js'
+import compare from "./Compare.js";
 
-async function cleansingData (car, cleansingData) {
-  const color = compare.compareValue(car.color_t, cleansingData.color) // 0
-  const provDistrict = compare.compareProvinceAndDistrict(car.province_t, car.district_t, cleansingData.province_district) // 1
-  const steering = compare.compareValue(car.driverseat_t, cleansingData.steering) // 2
-  const gas = compare.compareValue(car.energy_t, cleansingData.energy) // 3
-  const brandModel = compare.compareBrandAndModel(car.make_t, car.model_t, cleansingData.brand_model, cleansingData.brand) // 4
-  const motorMake = compare.compareValue(car.motor_make_t, cleansingData.brand) // 5
-  const commercePermitDate = compare.checkDate(car.commerce_permit_date_t) // 6
-  const expireDate = compare.checkDate(car.expire_date_t, true) // 7
-  const importPermitDate = compare.checkDate(car.import_permit_date_t) // 8
-  const industrialDocDate = compare.checkDate(car.industrial_doc_date_t) // 9
-  const issueDate = compare.checkDate(car.issue_date_t) // 10
-  const policeDocDate = compare.checkDate(car.police_doc_date_t) // 11
-  const purpose = compare.compareValue(car.purpose_t, cleansingData.purpose) // 12
-  const specialDate = compare.checkDate(car.special_date_t) // 13
-  const taxDate = compare.checkDate(car.tax_date_t) // 14
-  const taxPaymentDate = compare.checkDate(car.tax_payment_date_t) // 15
-  const technicalDocDate = compare.checkDate(car.technical_doc_date_t) // 16
-  const dateTimeUpdate = compare.checkDate(car.update_time.toString()) // 17
-  const vehicleType = compare.compareValue(car.vehicletype_t, cleansingData.vehicletype) // 18
+async function cleansingData(car, cleansingData) {
+  const color = compare.compareValue(car.color_t, cleansingData.color); // 0
+  const provDistrict = compare.compareProvinceAndDistrict(
+    car.province_t,
+    car.district_t,
+    cleansingData.province_district
+  ); // 1
+  const steering = compare.compareValue(
+    car.driverseat_t,
+    cleansingData.steering
+  ); // 2
+  const gas = compare.compareValue(car.energy_t, cleansingData.energy); // 3
+  const brandModel = compare.compareBrandAndModel(
+    car.make_t,
+    car.model_t,
+    cleansingData.brand_model,
+    cleansingData.brand
+  ); // 4
+  const motorMake = compare.compareValue(car.motor_make_t, cleansingData.brand); // 5
+  const commercePermitDate = compare.checkDate(car.commerce_permit_date_t); // 6
+  const expireDate = compare.checkDate(car.expire_date_t, true); // 7
+  const importPermitDate = compare.checkDate(car.import_permit_date_t); // 8
+  const industrialDocDate = compare.checkDate(car.industrial_doc_date_t); // 9
+  const issueDate = compare.checkDate(car.issue_date_t); // 10
+  const policeDocDate = compare.checkDate(car.police_doc_date_t); // 11
+  const purpose = compare.compareValue(car.purpose_t, cleansingData.purpose); // 12
+  const specialDate = compare.checkDate(car.special_date_t); // 13
+  const taxDate = compare.checkDate(car.tax_date_t); // 14
+  const taxPaymentDate = compare.checkDate(car.tax_payment_date_t); // 15
+  const technicalDocDate = compare.checkDate(car.technical_doc_date_t); // 16
+  const dateTimeUpdate = compare.checkDate(car.update_time.toString()); // 17
+  const vehicleType = compare.compareValue(
+    car.vehicletype_t,
+    cleansingData.vehicletype
+  ); // 18
 
-  return Promise.all([color, provDistrict, steering, gas, brandModel, motorMake, commercePermitDate, expireDate, importPermitDate, industrialDocDate, issueDate, policeDocDate, purpose, specialDate, taxDate, taxPaymentDate, technicalDocDate, dateTimeUpdate, vehicleType])
-    .then(async result => {
+  return Promise.all([
+    color,
+    provDistrict,
+    steering,
+    gas,
+    brandModel,
+    motorMake,
+    commercePermitDate,
+    expireDate,
+    importPermitDate,
+    industrialDocDate,
+    issueDate,
+    policeDocDate,
+    purpose,
+    specialDate,
+    taxDate,
+    taxPaymentDate,
+    technicalDocDate,
+    dateTimeUpdate,
+    vehicleType,
+  ])
+    .then(async (result) => {
       return {
         _olddata: await checkNaN(car._olddata_t),
         _ver: await checkNaN(car._ver_t),
@@ -46,7 +81,10 @@ async function cleansingData (car, cleansingData) {
         color_id: result[0], // color data
         color_old: await checkId(result[0], car.color_t), // check id = 99999 or null ?
         comerce_permit_date: result[6],
-        commerce_permit_date_old: await checkId(result[6], car.commerce_permit_date_t),
+        commerce_permit_date_old: await checkId(
+          result[6],
+          car.commerce_permit_date_t
+        ),
         comerce_permit_no: await checkNull(car.commerce_permit_no_t),
         commerce_permit: await checkNull(car.commerce_permit_t),
         counted: await checkNull(car.counted_t),
@@ -65,12 +103,18 @@ async function cleansingData (car, cleansingData) {
         expire_date_old: await checkId(result[7], car.expire_date_t),
         height: await checkNull(car.height_t),
         import_permit_date: result[8],
-        import_permit_date_old: await checkId(result[8], car.import_permit_date_t),
+        import_permit_date_old: await checkId(
+          result[8],
+          car.import_permit_date_t
+        ),
         import_permit_hsny: await checkNaN(car.import_permit_hsny_t),
         import_permit_invest: await checkNaN(car.import_permit_invest_t),
         import_permit_no: await checkNaN(car.import_permit_no_t),
         industrial_doc_date: result[9],
-        industrial_doc_date_old: await checkId(result[9], car.industrial_doc_date_t),
+        industrial_doc_date_old: await checkId(
+          result[9],
+          car.industrial_doc_date_t
+        ),
         industrial_doc_no: await checkNull(car.industrial_doc_no_t),
         issue_date: result[10],
         issue_date_old: await checkId(result[10], car.issue_date_t),
@@ -119,7 +163,10 @@ async function cleansingData (car, cleansingData) {
         tax_receip: await checkNull(car.tax_receipt_t),
         tax: await checkNull(car.tax_t),
         technical_doc_date: result[16],
-        technical_doc_date_old: await checkId(result[16], car.technical_doc_date_t),
+        technical_doc_date_old: await checkId(
+          result[16],
+          car.technical_doc_date_t
+        ),
         technical_doc_no: await checkNull(car.technical_doc_no_t),
         technicalcheck: await checkNull(car.technicalcheck_t),
         tnic_date: await checkNull(car.tnic_date_t),
@@ -136,27 +183,27 @@ async function cleansingData (car, cleansingData) {
         wheels: await checkNull(car.wheels_t),
         width: await checkNull(car.width_t),
         year_manufacture: await checkNull(car.year_manufactured_t),
-        vehicle_send: await checkNull(car.email_address_t)
-      }
+        vehicle_send: await checkNull(car.email_address_t),
+      };
     })
-    .catch(err => {
-      console.error(err)
-      throw 'Cleansing data error'
-    })
+    .catch((err) => {
+      console.error(err);
+      throw "Cleansing data error";
+    });
 }
 
-async function checkNaN (value) {
-  return isNaN(parseInt(value)) ? null : parseInt(value)
+async function checkNaN(value) {
+  return isNaN(parseInt(value)) ? null : parseInt(value);
 }
 
-async function checkNull (value) {
-  return value === null || value === '' ? null : value
+async function checkNull(value) {
+  return value === null || value === "" ? null : value;
 }
 
-async function checkId (id, value) {
-  return id === 99999 || id === null ? value : null
+async function checkId(id, value) {
+  return id === 99999 || id !== null ? value : null;
 }
 
 export default {
-  cleansingData
-}
+  cleansingData,
+};

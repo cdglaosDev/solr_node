@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "update": "node -experimental-json-modules update.js",
+    "update": "node --experimental-json-modules update.js",
     "create": "node create.js",
     "dev-update": "nodemon update.js --exec babel-node",
     "dev-create": "nodemon create.js --exec babel-node"
@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cli-color": "^2.0.2",
     "mysql2": "^2.2.5",
     "sequelize": "^6.5.0",
     "xlsx": "^0.16.9"

@@ -1,6 +1,7 @@
 import db from "../util/database.js";
 import cleansing from "../helpers/modules/Cleansing.js";
 // import func from '../helpers/index.js'
+import clc from "cli-color";
 
 const Vehicle = db.vehicle;
 const VehicleVdvc = db.vehicleVDVC;
@@ -42,7 +43,7 @@ export default {
       .then(async (data) => {
         return await Vehicle.create(data)
           .then((result) => {
-            console.log("Create new vehicle success");
+            console.log(clc.green("Create new vehicle success"));
             return result.id;
           })
           .catch((err) => {
@@ -59,7 +60,7 @@ export default {
       .then(async (data) => {
         return await Vehicle.update(data, { where: { id: id } })
           .then(() => {
-            console.log("Update vehicle success");
+            console.log(clc.yellow("Update vehicle success"));
             return id;
           })
           .catch((err) => {
