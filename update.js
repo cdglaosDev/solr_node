@@ -4,18 +4,18 @@ import vehicleController from "./controllers/Vehicles.js";
 import logController from "./controllers/Logs.js";
 import historyController from "./controllers/Histories.js";
 import fileController from "./controllers/File.js";
-// import saveJson from "./controllers/VihicelPreupload.js";
+import saveJson from "./controllers/VihicelPreupload.js";
 import clc from "cli-color";
 import illegaltraffic_and_acident from "./controllers/illegaltraffic_and_acident.js";
 
-await startProgram();
+// await startProgram();
 
-// call();
-// // call data
-// async function call() {
-//   await saveJson.savetoVehiclepreupload();
-//   await startProgram();
-// }
+call();
+// call data
+async function call() {
+  // await saveJson.savetoVehiclepreupload();
+  await startProgram();
+}
 
 async function startProgram() {
   let vehicleId;
@@ -34,8 +34,6 @@ async function startProgram() {
       console.log(err);
     });
   let num = 0;
-  let Time_start = "Time Start:";
-  console.time(Time_start);
   for (let i = 0; i < arr.length; i++) {
     const vehicle = arr[i];
     const isFind = await vehicleController
@@ -58,15 +56,17 @@ async function startProgram() {
           createError = createError + `${vehicle.note_id_t}, ${err}\n`;
         });
     }
-    // illegal Traffic
-    await illegaltraffic_and_acident
-      .createIllegaltraffic(vehicle, vehicleId)
-      .then((result) => {
-        if (result !== undefined) {
-          //accident
-          illegaltraffic_and_acident.crateAcident(vehicle, result);
-        }
-      });
+    // // illegal Traffic
+    if (vehicle.fineDate !== null) {
+      await illegaltraffic_and_acident
+        .createIllegaltraffic(vehicle, vehicleId)
+        .then((result) => {
+          if (result !== undefined) {
+            //accident
+            illegaltraffic_and_acident.crateAcident(vehicle, result);
+          }
+        });
+    }
 
     await logController
       .craeteLog(vehicle.changelog_t, vehicleId)
@@ -84,11 +84,6 @@ async function startProgram() {
       )
     );
   }
-  console.log(
-    clc.blue(
-      `-----------Use Timer is: ${console.timeEnd(Time_start)} ---------------`
-    )
-  );
   await creteErrorFile(createError, updateError, logError, historyError);
   setTimeout(() => {
     process.exit(0);

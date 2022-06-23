@@ -17,6 +17,7 @@ import IllegalTrafficAccident from "../models/IllegalTrafficAccident.js";
 
 const sequelize = new Sequelize(env.DB_DATABASE, env.DB_USER, env.DB_PASS, {
   host: env.DB_HOST,
+  port: env.DB_PORT,
   dialect: env.DB_DIALECT,
   operatorAliases: env.DB_OPERATORSALIASES,
   connectionLimit: env.DB_CONNECTIONLIMIT,

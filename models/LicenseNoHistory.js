@@ -2,30 +2,31 @@ export default (sequelize, Sequelize) => {
   const history = sequelize.define(
     "license_no_history",
     {
-      lice_no_his_id: {
+      id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      vehicle_type_group_id: {
+      vehicle_id: {
         type: Sequelize.INTEGER,
+        autoIncrement: false,
       },
-      lice_no_province_code: {
-        type: Sequelize.INTEGER,
+      vehicle_kind_code: {
+        type: Sequelize.STRING(10),
       },
-      lice_alph_id: {
-        type: Sequelize.INTEGER,
+      licence_no: {
+        type: Sequelize.STRING(10),
       },
-      lice_no_number: {
-        type: Sequelize.STRING,
+      province_code: {
+        type: Sequelize.STRING(10),
       },
-      license_log_activity: {
-        type: Sequelize.STRING,
+      start_date: {
+        type: Sequelize.DATE,
       },
-      vehicle_kind_id: {
-        // ******** edit from vehicle_kind_id to vehicle_kind_code
-        type: Sequelize.STRING, // ******** edit from integer to string
+      end_date: {
+        type: Sequelize.DATE,
       },
+      license_no_status: Sequelize.STRING(15),
     },
     {
       timestamps: false,

@@ -34,12 +34,12 @@ export default {
                 const index = result.findIndex(
                   (value) =>
                     value.vehicle_id === log[i].vehicle_id &&
-                    value.veh_log_field_name === log[i].veh_log_field_name &&
-                    value.veh_log_data_from === log[i].veh_log_data_from &&
-                    value.veh_log_data_to === log[i].veh_log_data_to &&
+                    value.name === log[i].name &&
+                    value.from === log[i].from &&
+                    value.to === log[i].to &&
                     value.app_request_no === log[i].app_request_no &&
                     value.veh_log_activity === log[i].veh_log_activity &&
-                    value.veh_log_datetime === log[i].veh_log_datetime
+                    value.datetime === log[i].datetime
                 );
                 if (index === -1) {
                   await createNewLog(log[i]).catch((err) => {

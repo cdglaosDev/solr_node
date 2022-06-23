@@ -3,7 +3,6 @@ import hisFunc from "../helpers/modules/History.js";
 import clc from "cli-color";
 
 const History = db.licenseNoHistory;
-const HistoryDetail = db.licenseNoHistoryDetail;
 
 export default {
   async createHistory(vehicleId) {
@@ -26,7 +25,7 @@ export default {
           const history = await hisFunc.getHistory(vehicleId).catch((err) => {
             throw err;
           });
-          const quick_id = log[i].veh_log_data_to;
+          const quick_id = log[i].to;
           if (history.length === 0) {
             // No history at vehicle_id create new history and history_detail
             const historyData = await hisFunc.checkQuickId(
@@ -35,15 +34,16 @@ export default {
               vehicleId
             );
             if (historyData) {
-              await createHistory(historyData, vehicle)
-                .then(async (historyDetailData) => {
-                  await createHistoryDetail(historyDetailData).catch((err) => {
-                    throw err;
-                  });
-                })
-                .catch((err) => {
-                  throw err;
-                });
+              let obj = {
+                vehicle_id: vehicle.dataValues.id,
+                vehicle_kind_code: historyData.vehicle_kind_id,
+                licence_no: historyData.lice_no_number,
+                province_code: historyData.lice_no_province_code,
+                start_date: vehicle.dataValues.issue_date,
+                end_date: vehicle.dataValues.expire_date,
+                license_no_status: "uses",
+              };
+              await createHistory(obj, vehicle);
             } else {
               console.log(
                 clc.red(
@@ -53,131 +53,50 @@ export default {
             }
           } else {
             // If have history >= 1
-            const historyData = await hisFunc
-              .checkQuickId(quick_id, vehicle.vehicle_type_id, vehicleId)
-              .catch((err) => {
-                throw err;
-              });
-            const hisIndex = await findHistory(history, historyData);
-            if (hisIndex !== -1) {
-              // If history by this quick_id already exist create only history detail
-              const detail = history[hisIndex].his_detail;
-              const startDate = vehicle.issue_date
-                ? vehicle.issue_date.split(" ")[0]
-                : null;
-              const endDate = vehicle.expire_date
-                ? vehicle.expire_date.split(" ")[0]
-                : null;
-              const hisDetailIndex = await findHistoryDetail(
-                detail,
-                startDate,
-                endDate,
-                vehicle.owner_name,
-                vehicle.village_name
-              );
-              if (hisDetailIndex === -1) {
-                // If don't have history_detail create new
-                const historyDetailData = {
-                  lice_no_his_det_start_date: startDate,
-                  lice_no_his_det_end_date: endDate,
-                  lice_no_owner: vehicle.owner_name,
-                  lice_no_village: vehicle.village_name,
-                  lice_no_his_id: history[hisIndex].lice_no_his_id,
-                  vehicle_id: vehicle.id,
-                };
-                await createHistoryDetail(historyDetailData).catch((err) => {
-                  throw err;
-                });
-              } else {
-                console.log(clc.red(`quick_id: ${quick_id} already exist`));
-              }
-            } else {
-              // If don't have history in data create new
-              if (historyData) {
-                await createHistory(historyData, vehicle)
-                  .then(async (historyDetailData) => {
-                    await createHistoryDetail(historyDetailData).catch(
-                      (err) => {
-                        throw err;
-                      }
-                    );
-                  })
-                  .catch((err) => {
-                    throw err;
-                  });
-              } else {
-                console.log(
-                  clc.red(
-                    `quick_id at vehicle_id: ${vehicleId} is invalid -- ${quick_id}`
-                  )
-                );
-              }
-            }
-          }
-        }
-      } else {
-        const historyData = await hisFunc.checkQuickId(
-          vehicle.quick_id,
-          vehicle.vehicle_type_id,
-          vehicleId
-        );
-        if (historyData) {
-          const history = await hisFunc.getHistory(vehicleId).catch((err) => {
-            throw err;
-          });
-          const hisIndex = await findHistory(history, historyData);
-          if (hisIndex !== -1) {
-            // If history by this quick_id already exist create only history detail
-            const detail = history[hisIndex].his_detail;
-            const startDate = vehicle.issue_date
-              ? vehicle.issue_date.split(" ")[0]
-              : null;
-            const endDate = vehicle.expire_date
-              ? vehicle.expire_date.split(" ")[0]
-              : null;
-            const hisDetailIndex = await findHistoryDetail(
-              detail,
-              startDate,
-              endDate,
-              vehicle.owner_name,
-              vehicle.village_name
+            const historyData = await hisFunc.checkQuickId(
+              quick_id,
+              vehicle.vehicle_type_id,
+              vehicleId
             );
-            if (hisDetailIndex === -1) {
-              // If don't have history_detail create new
-              const historyDetailData = {
-                lice_no_his_det_start_date: startDate,
-                lice_no_his_det_end_date: endDate,
-                lice_no_owner: vehicle.owner_name,
-                lice_no_village: vehicle.village_name,
-                lice_no_his_id: history[hisIndex].lice_no_his_id,
-                vehicle_id: vehicle.id,
-              };
-              await createHistoryDetail(historyDetailData).catch((err) => {
-                throw err;
-              });
+            if (historyData) {
+              for (let index = 0; index < history.length; index++) {
+                const element = history[index].licence_no;
+                if (historyData.lice_no_number == element) {
+                  console.log(
+                    clc.red(`History licence is Already : ${element}`)
+                  );
+                } else {
+                  if (
+                    historyData.lice_no_province_code ==
+                    history[index].province_code
+                  ) {
+                    console.log(
+                      clc.cyan(
+                        `Do not save of History licence this: ${element}`
+                      )
+                    );
+                  } else {
+                    let obj = {
+                      vehicle_id: vehicle.dataValues.id,
+                      vehicle_kind_code: historyData.vehicle_kind_id,
+                      licence_no: historyData.lice_no_number,
+                      province_code: historyData.lice_no_province_code,
+                      start_date: vehicle.dataValues.issue_date,
+                      end_date: vehicle.dataValues.expire_date,
+                      license_no_status: "not_uses",
+                    };
+                    await createHistory(obj, vehicle);
+                  }
+                }
+              }
             } else {
               console.log(
-                clc.red(`quick_id: ${vehicle.quick_id} already exist`)
+                clc.red(
+                  `quick_id at vehicle_id: ${vehicleId} is invalid -- ${quick_id}`
+                )
               );
             }
-          } else {
-            // If don't have history in data create new
-            await createHistory(historyData, vehicle)
-              .then(async (historyDetailData) => {
-                await createHistoryDetail(historyDetailData).catch((err) => {
-                  throw err;
-                });
-              })
-              .catch((err) => {
-                throw err;
-              });
           }
-        } else {
-          console.log(
-            clc.red(
-              `quick_id at vehicle_id: ${vehicleId} is invalid -- ${vehicle.quick_id}`
-            )
-          );
         }
       }
     } catch (error) {
@@ -188,78 +107,13 @@ export default {
 
 async function createHistory(historyData, vehicle) {
   return await History.create(historyData)
-    .then(async (result) => {
+    .then(() => {
       console.log(
         clc.green(`Create history of vehicle_id: ${vehicle.id} success`)
       );
-      const historyId = result.lice_no_his_id;
-      const historyStatusId = await hisFunc.getUseId().catch((err) => {
-        console.log(err);
-        throw "Get USES id fail";
-      });
-      return {
-        lice_no_his_status_id: historyStatusId,
-        lice_no_his_det_start_date: vehicle.issue_date,
-        lice_no_his_det_end_date: vehicle.expire_date,
-        lice_no_owner: vehicle.owner_name,
-        lice_no_village: vehicle.village_name,
-        lice_no_his_id: historyId,
-        vehicle_id: vehicle.id,
-      };
     })
     .catch((err) => {
       console.log(err);
-      throw `Create history of vehicle_id: ${vehicle.id} fail`;
+      throw `ERROR history of vehicle_id: ${vehicle.id} fail`;
     });
-}
-
-async function createHistoryDetail(historyDetailData) {
-  historyDetailData.lice_no_his_status_id =
-    historyDetailData.lice_no_his_status_id
-      ? historyDetailData.lice_no_his_status_id
-      : await hisFunc.getUseId().catch((err) => {
-          throw err;
-        });
-  return await HistoryDetail.create(historyDetailData)
-    .then(() => {
-      console.log(
-        clc.green(
-          `Create history_detail of vehicle_id: ${historyDetailData.vehicle_id} success`
-        )
-      );
-    })
-    .catch((err) => {
-      console.log(err);
-      throw `Create history_detail of vehicle_id: ${historyDetailData.vehicle_id} fail`;
-    });
-}
-
-async function findHistory(history, historyData) {
-  return await history.findIndex(
-    (
-      value // check history by compare value
-    ) =>
-      value.lice_no_province_code === historyData.lice_no_province_code &&
-      value.lice_alph_id === historyData.lice_alph_id &&
-      value.lice_no_number === historyData.lice_no_number &&
-      value.vehicle_kind_code === historyData.vehicle_kind_code // **** chenge vehicle_kind_id to vehicle_kind_code
-  );
-}
-
-async function findHistoryDetail(
-  detail,
-  startDate,
-  endDate,
-  ownerName,
-  villageName
-) {
-  return await detail.findIndex(
-    (
-      value // check history_detail
-    ) =>
-      value.lice_no_his_det_start_date === startDate &&
-      value.lice_no_his_det_end_date === endDate &&
-      value.lice_no_owner === ownerName &&
-      value.lice_no_village === villageName
-  );
 }

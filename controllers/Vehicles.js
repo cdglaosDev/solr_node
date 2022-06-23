@@ -48,7 +48,8 @@ export default {
           })
           .catch((err) => {
             console.log(err);
-            throw "Error to crete new vehicle";
+            process.exit(0);
+            // throw "Error to crete new vehicle";
           });
       })
       .catch((err) => {
@@ -65,7 +66,8 @@ export default {
           })
           .catch((err) => {
             console.log(err);
-            throw "Error to update vehicle";
+            process.exit(0);
+            // throw "Error to update vehicle";
           });
       })
       .catch((err) => {

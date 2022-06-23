@@ -22,7 +22,7 @@ export default {
         .create({
           vehicle_id: vehicleId,
           date: finedate,
-          status: 1,
+          status: "1",
           to_date: releasdate,
           log: finelog,
         })

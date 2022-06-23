@@ -1,4 +1,4 @@
-import dataJson from "../../files/update_data02_31.json" assert { type: "json" };
+import dataJson from "../../files/update_data2016_1-4.json" assert { type: "json" };
 import db from "../util/database.js";
 
 async function savetoVehiclepreupload() {
@@ -12,8 +12,6 @@ async function savetoVehiclepreupload() {
     }));
 
   //insert
-  let dates = [];
-  let char = [];
   let num = 0;
   const cashData = dataJson.response.docs;
   for (let index = 0; index < cashData.length; index++) {
@@ -27,7 +25,7 @@ async function savetoVehiclepreupload() {
     //   dates.push(cashData[index].note_id_t);
     // } else {
     //   char.push(cashData[index].note_id_t);
-    // await db.vehicleVDVCPreUpload.create(cashData[index]);
+    //   await db.vehicleVDVCPreUpload.create(cashData[index]);
     // }
   }
 }
