@@ -1,6 +1,7 @@
 import db from "../util/database.js";
 import logFunc from "../helpers/modules/Log.js";
 import clc from "cli-color";
+import connection from "../util/config.js";
 
 const Log = db.log;
 
@@ -63,14 +64,25 @@ export default {
   },
 };
 
+// async function createNewLog(log) {
+//   return await Log.create(log)
+//     .then((_) => {
+//       console.log(clc.green(`Create log from id: ${log.vehicle_id} success.`));
+//       return true;
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       throw "Error to create new log";
+//     });
+// }
 async function createNewLog(log) {
-  return await Log.create(log)
-    .then((_) => {
+  return await connection.query(
+    "INSERT INTO vehicle_logs SET ?",
+    log,
+    function (err, result) {
+      if (err) console.log(err);
       console.log(clc.green(`Create log from id: ${log.vehicle_id} success.`));
       return true;
-    })
-    .catch((err) => {
-      console.log(err);
-      throw "Error to create new log";
-    });
+    }
+  );
 }

@@ -1,6 +1,7 @@
 import db from "../util/database.js";
 import hisFunc from "../helpers/modules/History.js";
 import clc from "cli-color";
+import connection from "../util/config.js";
 
 const History = db.licenseNoHistory;
 
@@ -105,15 +106,28 @@ export default {
   },
 };
 
+// async function createHistory(historyData, vehicle) {
+//   return await History.create(historyData)
+//     .then(() => {
+//       console.log(
+//         clc.green(`Create history of vehicle_id: ${vehicle.id} success`)
+//       );
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       throw `ERROR history of vehicle_id: ${vehicle.id} fail`;
+//     });
+// }
+
 async function createHistory(historyData, vehicle) {
-  return await History.create(historyData)
-    .then(() => {
+  return await connection.query(
+    "INSERT INTO license_no_history SET ?",
+    historyData,
+    function (err, result) {
+      if (err) console.log(err);
       console.log(
         clc.green(`Create history of vehicle_id: ${vehicle.id} success`)
       );
-    })
-    .catch((err) => {
-      console.log(err);
-      throw `ERROR history of vehicle_id: ${vehicle.id} fail`;
-    });
+    }
+  );
 }

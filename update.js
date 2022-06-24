@@ -7,6 +7,7 @@ import fileController from "./controllers/File.js";
 import saveJson from "./controllers/VihicelPreupload.js";
 import clc from "cli-color";
 import illegaltraffic_and_acident from "./controllers/illegaltraffic_and_acident.js";
+// import connection from "./util/config.js";
 
 // await startProgram();
 
@@ -33,6 +34,7 @@ async function startProgram() {
     .catch((err) => {
       console.log(err);
     });
+
   let num = 0;
   for (let i = 0; i < arr.length; i++) {
     const vehicle = arr[i];
@@ -56,7 +58,7 @@ async function startProgram() {
           createError = createError + `${vehicle.note_id_t}, ${err}\n`;
         });
     }
-    // // illegal Traffic
+    // illegal Traffic
     if (vehicle.fineDate !== null) {
       await illegaltraffic_and_acident
         .createIllegaltraffic(vehicle, vehicleId)
