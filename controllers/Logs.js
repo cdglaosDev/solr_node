@@ -76,13 +76,18 @@ export default {
 //     });
 // }
 async function createNewLog(log) {
-  return await connection.query(
-    "INSERT INTO vehicle_logs SET ?",
-    log,
-    function (err, result) {
-      if (err) console.log(err);
-      console.log(clc.green(`Create log from id: ${log.vehicle_id} success.`));
-      return true;
-    }
-  );
+  return new Promise((resolve, reject) => {
+    connection.query(
+      "INSERT INTO vehicle_logs SET ?",
+      log,
+      function (err, result) {
+        if (err) console.log(err);
+        console.log(
+          clc.green(`Create log from id: ${log.vehicle_id} success.`)
+        );
+        resolve(true);
+        reject(err);
+      }
+    );
+  });
 }

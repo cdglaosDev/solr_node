@@ -4,18 +4,21 @@ import vehicleController from "./controllers/Vehicles.js";
 import logController from "./controllers/Logs.js";
 import historyController from "./controllers/Histories.js";
 import fileController from "./controllers/File.js";
-import saveJson from "./controllers/VihicelPreupload.js";
+import vehicles_pre_upload from "./controllers/VihicelPreupload.js";
 import clc from "cli-color";
 import illegaltraffic_and_acident from "./controllers/illegaltraffic_and_acident.js";
-// import connection from "./util/config.js";
 
-// await startProgram();
+// startProgram();
 
 call();
 // call data
 async function call() {
-  // await saveJson.savetoVehiclepreupload();
-  await startProgram();
+  await vehicles_pre_upload.TruncateTable().then((result) => {
+    console.log(result);
+  });
+  await vehicles_pre_upload.savetoVehiclepreupload();
+
+  // await startProgram();
 }
 
 async function startProgram() {
@@ -59,15 +62,30 @@ async function startProgram() {
         });
     }
     // illegal Traffic
-    if (vehicle.fineDate !== null) {
-      await illegaltraffic_and_acident
+    if (vehicle.finedate_t != null) {
+      // illegal traffic and accident
+      let traffic_Id = await illegaltraffic_and_acident
         .createIllegaltraffic(vehicle, vehicleId)
         .then((result) => {
-          if (result !== undefined) {
-            //accident
-            illegaltraffic_and_acident.crateAcident(vehicle, result);
+          if (result != undefined) {
+            return result;
           }
+        })
+        .catch((err) => {
+          console.log(err);
         });
+      // create accident
+      if (traffic_Id) {
+        await illegaltraffic_and_acident
+          .crateAcident(vehicle, traffic_Id)
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            process.exit(0);
+          });
+      }
     }
 
     await logController

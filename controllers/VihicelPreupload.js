@@ -1,49 +1,54 @@
-import dataJson from "../../files/update_data02_31.json" assert { type: "json" };
-import db from "../util/database.js";
+import dataJson from "../../files/update_data_20_05.json" assert { type: "json" };
 import connection from "../util/config.js";
 
-async function savetoVehiclepreupload() {
-  delete (await db.vehicleVDVCPreUpload
-    .truncate()
-    .then(() => {
-      console.log("Delete data in table is sccuess");
-    })
-    .catch((err) => {
-      console.log(err);
-    }));
-
-  //insert
-  // let num = 0;
-  // const cashData = await dataJson.response.docs;
-  // for (let index = 0; index < cashData.length; index++) {
-  //   connection.query(
-  //     "INSERT INTO vehicles_pre_upload SET ?",
-  //     cashData[index],
-  //     (err, results) => {
-  //       if (err) {
-  //         console.error(err.message);
-  //         return;
-  //       }
-  //       console.log("Sucess " + ++num);
-  //     }
-  //   );
-  // }
-  let num = 0;
-  const cashData = dataJson.response.docs;
-  for (let index = 0; index < cashData.length; index++) {
-    await db.vehicleVDVCPreUpload.create(cashData[index]);
-    console.log("Sucess " + ++num);
-
-    // let str = await cashData[index].note_id_t;
-    // const note = cashData[index].note_id_t.match(/\d{4}([\/.-])\d{2}\1\d{2}/g);
-    // // const note = cashData[index].note_id_t.match(/\d{4}(\D)\d{2}\1\d{2}/g);
-    // if (note) {
-    //   dates.push(cashData[index].note_id_t);
-    // } else {
-    //   char.push(cashData[index].note_id_t);
-    //   await db.vehicleVDVCPreUpload.create(cashData[index]);
-    // }
-  }
+function TruncateTable() {
+  // delete
+  return new Promise((resolve, reject) => {
+    connection.query("TRUNCATE table vehicles_pre_upload", (err, result) => {
+      if (err) console.log(err);
+      resolve("TrunCate table is Sucess!!!");
+    });
+  });
 }
 
-export default { savetoVehiclepreupload };
+function Allvehicles_preupload() {
+  // addd
+  return new Promise((resolve, reject) => {
+    connection.query("SELECT * FROM `vehicles_pre_upload`", (err, result) => {
+      if (err) console.log(err);
+      resolve(result);
+      reject(err);
+    });
+  });
+}
+
+async function savetoVehiclepreupload() {
+  //   insert;
+  let num = 0;
+  const cashData = await dataJson.response.docs;
+  for (let index = 0; index < cashData.length; index++) {
+    connection.query(
+      "INSERT INTO vehicles_pre_upload SET ?",
+      cashData[index],
+      (err, results) => {
+        if (err) {
+          console.error(err.message);
+          return;
+        }
+        console.log("Sucess " + ++num);
+      }
+    );
+  }
+  //   reading
+  connection.query(
+    "SELECT count(*) as counts FROM `vehicles_pre_upload`",
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Data Insert is : " + result[0].counts);
+      }
+    }
+  );
+}
+export default { savetoVehiclepreupload, TruncateTable, Allvehicles_preupload };

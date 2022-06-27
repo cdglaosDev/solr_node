@@ -1,5 +1,5 @@
 //mysql connection setup
-import mysql from "mysql";
+import mysql from "mysql2";
 var connection = mysql.createPool({
   host: "127.0.0.1",
   port: "3306",
@@ -7,7 +7,7 @@ var connection = mysql.createPool({
   password: "",
   database: "vrms_db",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 100,
   queueLimit: 0,
 });
 

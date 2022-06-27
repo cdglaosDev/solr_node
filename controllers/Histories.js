@@ -120,14 +120,18 @@ export default {
 // }
 
 async function createHistory(historyData, vehicle) {
-  return await connection.query(
-    "INSERT INTO license_no_history SET ?",
-    historyData,
-    function (err, result) {
-      if (err) console.log(err);
-      console.log(
-        clc.green(`Create history of vehicle_id: ${vehicle.id} success`)
-      );
-    }
-  );
+  return new Promise((resolve, reject) => {
+    connection.query(
+      "INSERT INTO license_no_history SET ?",
+      historyData,
+      function (err, result) {
+        if (err) console.log(err);
+        resolve(result);
+        reject(err);
+        console.log(
+          clc.green(`Create history of vehicle_id: ${vehicle.id} success`)
+        );
+      }
+    );
+  });
 }
