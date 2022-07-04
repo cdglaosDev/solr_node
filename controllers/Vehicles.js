@@ -22,12 +22,16 @@ export default {
         throw `Error when find Vehicle at note_id: ${noteId}`;
       });
   },
-  async findVehicle(noteId) {
+  async findVehicle(noteId, chassis) {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT id FROM `vehicles` WHERE note_id = N'" + noteId + "'",
+        "SELECT id FROM `vehicles` WHERE note_id = N'" +
+          noteId +
+          "' and chassis_no = N'" +
+          chassis +
+          "' ",
         (err, result) => {
-          if (result.length == 0) {
+          if (result.length === 0) {
             resolve(false);
           } else {
             resolve(result[0].id);

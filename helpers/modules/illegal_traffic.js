@@ -23,13 +23,17 @@ export default {
       let releasdate = value.releasedate_t.match(
         /\d{1,2}\D\d{1,2}\D(\d{2,4})/g
       );
-      //releasdate
-      let maxarray = releasdate.length;
       let data = "";
-      if (maxarray >= 2) {
-        data = releasdate[maxarray - 1];
+      if (releasdate !== null) {
+        //releasdate
+        let maxarray = releasdate.length;
+        if (maxarray >= 2) {
+          data = releasdate[maxarray - 1];
+        } else {
+          data = releasdate[0];
+        }
       } else {
-        data = releasdate[0];
+        data = value.releasedate_t;
       }
       return data;
     }

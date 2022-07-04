@@ -4,6 +4,7 @@ import clc from "cli-color";
 import connection from "../util/config.js";
 
 const History = db.licenseNoHistory;
+let checDP = [];
 
 export default {
   async createHistory(vehicleId) {
@@ -54,6 +55,7 @@ export default {
             }
           } else {
             // If have history >= 1
+
             const historyData = await hisFunc.checkQuickId(
               quick_id,
               vehicle.vehicle_type_id,
@@ -61,33 +63,28 @@ export default {
             );
             if (historyData) {
               for (let index = 0; index < history.length; index++) {
-                const element = history[index].licence_no;
-                if (historyData.lice_no_number == element) {
-                  console.log(
-                    clc.red(`History licence is Already : ${element}`)
-                  );
+                let license = await history[index].licence_no;
+                let province = await history[index].province_code;
+                let vehicle_kind = await history[index].vehicle_kind_code;
+                if (
+                  historyData.lice_no_number !== license &&
+                  historyData.lice_no_province_code !== province &&
+                  historyData.vehicle_kind_id !== vehicle_kind
+                ) {
+                  let obj = {
+                    vehicle_id: vehicle.dataValues.id,
+                    vehicle_kind_code: historyData.vehicle_kind_id,
+                    licence_no: historyData.lice_no_number,
+                    province_code: historyData.lice_no_province_code,
+                    start_date: vehicle.dataValues.issue_date,
+                    end_date: vehicle.dataValues.expire_date,
+                    license_no_status: "not_uses",
+                  };
+                  checDP.push(obj);
                 } else {
-                  if (
-                    historyData.lice_no_province_code ==
-                    history[index].province_code
-                  ) {
-                    console.log(
-                      clc.cyan(
-                        `Do not save of History licence this: ${element}`
-                      )
-                    );
-                  } else {
-                    let obj = {
-                      vehicle_id: vehicle.dataValues.id,
-                      vehicle_kind_code: historyData.vehicle_kind_id,
-                      licence_no: historyData.lice_no_number,
-                      province_code: historyData.lice_no_province_code,
-                      start_date: vehicle.dataValues.issue_date,
-                      end_date: vehicle.dataValues.expire_date,
-                      license_no_status: "not_uses",
-                    };
-                    await createHistory(obj, vehicle);
-                  }
+                  console.log(
+                    clc.blueBright(`History licence is Already : ${license}`)
+                  );
                 }
               }
             } else {
@@ -99,6 +96,18 @@ export default {
             }
           }
         }
+        await reducArray(checDP);
+      } else {
+        let obj = {
+          vehicle_id: vehicle.dataValues.id,
+          vehicle_kind_code: vehicle.dataValues.vehicle_kind_code,
+          licence_no: vehicle.dataValues.licence_no,
+          province_code: vehicle.dataValues.province_code,
+          start_date: vehicle.dataValues.issue_date,
+          end_date: vehicle.dataValues.expire_date,
+          license_no_status: "uses",
+        };
+        await createHistory(obj, vehicle);
       }
     } catch (error) {
       throw error;
@@ -119,6 +128,28 @@ export default {
 //     });
 // }
 
+async function reducArray(arr) {
+  const uniqueIds = [];
+
+  const unique = arr.filter((element) => {
+    const isDuplicate = uniqueIds.includes(element.licence_no);
+
+    if (!isDuplicate) {
+      uniqueIds.push(element.licence_no);
+
+      return true;
+    }
+    return false;
+  });
+
+  for (let i = 0; i < unique.length; i++) {
+    const element = unique[i];
+    await createHistory(element);
+  }
+
+  checDP = [];
+}
+
 async function createHistory(historyData, vehicle) {
   return new Promise((resolve, reject) => {
     connection.query(
@@ -128,9 +159,13 @@ async function createHistory(historyData, vehicle) {
         if (err) console.log(err);
         resolve(result);
         reject(err);
-        console.log(
-          clc.green(`Create history of vehicle_id: ${vehicle.id} success`)
-        );
+        if (vehicle !== undefined) {
+          console.log(
+            clc.green(`Create history of vehicle_id: ${vehicle.id} success`)
+          );
+        } else {
+          console.log(clc.green(`Create history is success`));
+        }
       }
     );
   });

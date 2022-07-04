@@ -27,7 +27,7 @@ export default {
       };
       return new Promise((resolve, resject) => {
         connection.query(
-          "INSERT INTO `illegaltraffics` SET ?",
+          "INSERT INTO `illegal_traffic` SET ?",
           data,
           (err, result) => {
             if (err) {
@@ -60,37 +60,19 @@ export default {
   },
   async crateAcident(value, illegal_Id) {
     let data = acident.checkData(value);
-    if (data.length > 0 && illegal_Id != 0) {
+    if (data.length > 0 && illegal_Id !== 0) {
       for (let index = 0; index < data.length; index++) {
-        let obj = {
-          illegal_traffic_id: illegal_Id,
-          traffic_accidence_id: data[index],
-        };
-        return new Promise((resolve, reject) => {
-          connection.query(
-            "INSERT INTO `illegatrafficaccidents` SET ?",
-            obj,
-            (err, result) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(clc.yellow("create Accident is Success"));
-              }
-            }
-          );
-        });
-
-        // await accident
-        //   .create({
-        //     illegal_traffic_id: illegal_Id,
-        //     traffic_accidence_id: data[index],
-        //   })
-        //   .then(() => {
-        //     console.log(clc.yellow("create Accident is Success"));
-        //   })
-        //   .catch((err) => {
-        //     console.log(err);
-        //   });
+        await accident
+          .create({
+            illegal_traffic_id: illegal_Id,
+            traffic_accidence_id: data[index],
+          })
+          .then(() => {
+            console.log(clc.yellow("create Accident is Success"));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     }
   },

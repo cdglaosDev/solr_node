@@ -56,6 +56,9 @@ export default {
     return await Vehicle.findByPk(vehicleId, {
       attributes: [
         "id",
+        "licence_no",
+        "province_code",
+        "vehicle_kind_code",
         "quick_id",
         "vehicle_type_id",
         "owner_name",

@@ -1,4 +1,4 @@
-import dataJson from "../../files/update_data_20_05.json" assert { type: "json" };
+import dataJson from "../../files/update_data2020_4-6.json" assert { type: "json" };
 import connection from "../util/config.js";
 
 function TruncateTable() {
@@ -32,8 +32,9 @@ async function savetoVehiclepreupload() {
       cashData[index],
       (err, results) => {
         if (err) {
-          console.error(err.message);
-          return;
+          console.error(err);
+          console.log("note_id: " + cashData[index].note_id_t);
+          process.exit(0);
         }
         console.log("Sucess " + ++num);
       }

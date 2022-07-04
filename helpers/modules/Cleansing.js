@@ -140,7 +140,7 @@ async function cleansingData(car, cleansingData) {
         province_no: await checkNull(car.province_no_t),
         province_code: result[1].province,
         province_old: await checkId(result[1].province, car.province_t),
-        purpose_id: result[12],
+        vehicle_kind_code: result[12],
         purpose_old: await checkId(result[12], car.purpose_t),
         quick_id: await checkNull(car.quick_id_t),
         remark: await checkNull(car.remark_t),
@@ -160,7 +160,7 @@ async function cleansingData(car, cleansingData) {
         tax_payment_date_old: await checkId(result[15], car.tax_payment_date_t),
         tax_payment_no: await checkNull(car.tax_payment_no_t),
         tax_permit: await checkNull(car.tax_permit_t),
-        tax_receip: await checkNull(car.tax_receipt_t),
+        tax_receipt: await checkNull(car.tax_receipt_t),
         tax: await checkNull(car.tax_t),
         technical_doc_date: result[16],
         technical_doc_date_old: await checkId(

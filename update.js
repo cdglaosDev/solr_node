@@ -8,9 +8,9 @@ import vehicles_pre_upload from "./controllers/VihicelPreupload.js";
 import clc from "cli-color";
 import illegaltraffic_and_acident from "./controllers/illegaltraffic_and_acident.js";
 
-// startProgram();
+startProgram();
 
-call();
+// call();
 // call data
 async function call() {
   await vehicles_pre_upload.TruncateTable().then((result) => {
@@ -42,7 +42,7 @@ async function startProgram() {
   for (let i = 0; i < arr.length; i++) {
     const vehicle = arr[i];
     const isFind = await vehicleController
-      .findVehicle(vehicle.note_id_t)
+      .findVehicle(vehicle.note_id_t, vehicle.chassis_no_t)
       .catch((err) => {
         throw err;
       });
@@ -52,6 +52,7 @@ async function startProgram() {
         .catch((err) => {
           console.log(err);
           updateError = updateError + `${vehicle.note_id_t}, ${err}\n`;
+          process.exit(0);
         });
     } else {
       vehicleId = await vehicleController
@@ -59,10 +60,12 @@ async function startProgram() {
         .catch((err) => {
           console.log(err);
           createError = createError + `${vehicle.note_id_t}, ${err}\n`;
+          process.exit(0);
         });
     }
+
     // illegal Traffic
-    if (vehicle.finedate_t != null) {
+    if (vehicle.finedate_t !== null) {
       // illegal traffic and accident
       let traffic_Id = await illegaltraffic_and_acident
         .createIllegaltraffic(vehicle, vehicleId)
@@ -73,18 +76,11 @@ async function startProgram() {
         })
         .catch((err) => {
           console.log(err);
+          process.exit(0);
         });
       // create accident
       if (traffic_Id) {
-        await illegaltraffic_and_acident
-          .crateAcident(vehicle, traffic_Id)
-          .then((result) => {
-            console.log(result);
-          })
-          .catch((err) => {
-            console.log(err);
-            process.exit(0);
-          });
+        await illegaltraffic_and_acident.crateAcident(vehicle, traffic_Id);
       }
     }
 
@@ -93,10 +89,12 @@ async function startProgram() {
       .catch((err) => {
         console.log(err);
         logError = logError + `${vehicleId}, ${err}\n`;
+        process.exit(0);
       });
     await historyController.createHistory(vehicleId).catch((err) => {
       console.log(err);
       historyError = historyError + `${vehicleId}, ${err}\n`;
+      process.exit(0);
     });
     console.log(
       clc.blue(
